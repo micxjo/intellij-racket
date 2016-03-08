@@ -68,6 +68,12 @@ public interface RacketTokenElementTypes {
     RacketTokenType LBRACK = new RacketTokenType("{");
     RacketTokenType RBRACK = new RacketTokenType("}");
 
+    // Vector delimiters
+
+    RacketTokenType HASH_LPAREN = new RacketTokenType("#(");
+    RacketTokenType HASH_LBRACE = new RacketTokenType("#[");
+    RacketTokenType HASH_LBRACK = new RacketTokenType("#{");
+
     // Other
 
     RacketTokenType VEC_OPEN = new RacketTokenType("#(");

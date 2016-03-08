@@ -117,7 +117,9 @@ list ::= <<parened datum*>>
 
 abbreviation ::= (SINGLE_QUOTE | ABBREVIATION_PREFIX) datum
 
-vector ::= VEC_OPEN datum* RPAREN
+vector ::= HASH_LPAREN datum* RPAREN
+         | HASH_LBRACE datum* RBRACE
+         | HASH_LBRACK datum* RBRACK
 
 private datum ::= simple_datum | compound_datum
 

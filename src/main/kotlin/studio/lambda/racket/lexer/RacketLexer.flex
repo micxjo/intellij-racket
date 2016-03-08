@@ -181,7 +181,9 @@ FALSE = "#" [fF]
     "quasiquote"        { return QUASIQUOTE; }
     {TRUE}              { return TRUE; }
     {FALSE}             { return FALSE; }
-    "#("                { return VEC_OPEN; }
+    "#("                { return HASH_LPAREN; }
+    "#["                { return HASH_LBRACE; }
+    "#{"                { return HASH_LBRACK; }
     "("                 { return LPAREN; }
     ")"                 { return RPAREN; }
     "["                 { return LBRACE; }

@@ -31,7 +31,9 @@ class RacketBraceMatcher : PairedBraceMatcher {
                 BracePair(LPAREN, RPAREN, true),
                 BracePair(LBRACE, RBRACE, true),
                 BracePair(LBRACK, RBRACK, true),
-                BracePair(VEC_OPEN, RPAREN, true)
+                BracePair(HASH_LPAREN, RPAREN, true),
+                BracePair(HASH_LBRACE, RBRACE, true),
+                BracePair(HASH_LBRACK, RBRACK, true)
         )
     }
 
