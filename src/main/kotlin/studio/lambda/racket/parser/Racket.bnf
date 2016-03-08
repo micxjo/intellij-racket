@@ -1,0 +1,135 @@
+/*
+ * intellij-racket
+ * Copyright (C) 2016 Micxjo Funkcio
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+{
+    parserClass="studio.lambda.racket.parser.RacketParser"
+
+    extends="com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+    psiClassPrefix="Racket"
+    psiImplClassSuffix="Impl"
+    psiPackage="studio.lambda.racket.psi"
+    psiImplPackage="studio.lambda.racket.psi.impl"
+
+    elementTypeHolderClass="studio.lambda.racket.psi.RacketTypes"
+    elementTypeClass="studio.lambda.racket.psi.RacketElementType"
+    tokenTypeClass="studio.lambda.racket.psi.RacketTokenType"
+
+    parserImports='static studio.lambda.racket.psi.RacketTokenElementTypes.*'
+
+    generateTokens=false
+}
+
+racketFile ::= LANG? item_*
+
+private item_ ::= expression_or_definition | COMMENT
+
+private expression_keyword ::= QUOTE | LAMBDA | IF | SET | BEGIN | COND | AND
+                           | OR | CASE | LET | LET_STAR | LET_REC | DO | DELAY
+                           | QUASIQUOTE
+
+private keyword ::= expression_keyword
+                  | ELSE | DEFINE | UNQUOTE | UNQUOTE_SPLICING
+
+private boolean_ ::= TRUE | FALSE
+
+literal ::= quotation
+          | boolean_
+          | CHAR_LITERAL
+          | STRING_LITERAL
+          | NUMBER_LITERAL
+
+operator ::= expression
+
+operand ::= expression
+
+private meta parened ::= LPAREN <<p>> RPAREN
+                       | LBRACE <<p>> RBRACE
+                       | LBRACK <<p>> RBRACK
+
+procedure_call ::= <<parened (operator operand*)>>
+
+definition ::= <<parened (DEFINE VARIABLE expression)>>
+             | <<parened (BEGIN definition*)>>
+
+body ::= definition* expression+
+
+formals ::= <<parened VARIABLE*>>
+
+lambda_expression ::= <<parened (LAMBDA formals body)>>
+
+assignment ::= <<parened (SET VARIABLE expression)>>
+
+derived_expression ::= <<parened (
+    COND cond_clause* <<parened (ELSE expression+)>>?
+  | CASE expression case_clause* <<parened (ELSE expression+)>>?
+  | AND expression*
+  | OR expression*
+  | LET <<parened binding_spec*>> body
+  | LET_STAR <<parened binding_spec*>> body
+  | LET_REC <<parened binding_spec*>> body
+  | BEGIN expression+
+  | DO <<parened iteration_spec*>> <<parened (test do_result)>> expression*
+  | DELAY expression
+    )>>
+
+cond_clause ::= <<parened (test expression+)>>
+              | <<parened test>>
+              | <<parened (test ARROW expression)>>
+
+case_clause ::= <<parened (<<parened datum>> expression+)>>
+
+binding_spec ::= <<parened (VARIABLE expression)>>
+
+iteration_spec ::= <<parened (VARIABLE expression expression?)>>
+
+test ::= expression
+
+do_result ::= expression*
+
+conditional ::= <<parened (IF test expression expression?)>>
+
+private simple_datum ::= boolean_
+                       | NUMBER_LITERAL
+                       | CHAR_LITERAL
+                       | STRING_LITERAL
+                       | VARIABLE
+
+private compound_datum ::= list | vector
+
+list ::= <<parened datum*>>
+       | abbreviation
+
+abbreviation ::= (SINGLE_QUOTE | ABBREVIATION_PREFIX) datum
+
+vector ::= VEC_OPEN datum* RPAREN
+
+private datum ::= simple_datum | compound_datum
+
+quotation ::= SINGLE_QUOTE datum
+            | <<parened (QUOTE datum)>>
+
+private expression ::= VARIABLE
+                     | literal
+                     | procedure_call
+                     | lambda_expression
+                     | conditional
+                     | assignment
+                     | derived_expression
+
+private expression_or_definition ::= expression | definition

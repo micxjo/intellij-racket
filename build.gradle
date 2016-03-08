@@ -1,0 +1,97 @@
+buildscript {
+    ext.kotlinVersion = '1.0.0'
+
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
+    }
+}
+
+plugins {
+    id "org.jetbrains.intellij" version "0.0.43"
+}
+
+repositories {
+    mavenCentral()
+}
+
+configurations {
+    gen
+}
+
+dependencies {
+    gen files('lib/jflex/JFlex.jar')
+    gen files('lib/gk/grammar-kit-patched.jar')
+}
+
+apply plugin: 'idea'
+apply plugin: 'org.jetbrains.intellij'
+apply plugin: 'java'
+apply plugin: 'kotlin'
+
+idea {
+    module {
+        generatedSourceDirs += file('gen')
+    }
+}
+
+intellij {
+    pluginName 'intellij-racket'
+}
+
+sourceSets {
+    main.java.srcDirs += "gen"
+}
+
+task generateLexer(type: JavaExec) {
+    ext.src = "src/main/kotlin/studio/lambda/racket/lexer/RacketLexer.flex"
+    ext.dst = "gen/studio/lambda/racket/lexer/"
+
+    main = "JFlex.Main"
+
+    args = [ "--sliceandcharat",
+             "--skel", "lib/jflex/idea-flex.skeleton",
+             "-d", dst,
+             src ]
+
+    inputs  .file   file(src)
+    outputs .dir    file(dst + "_RacketLexer.java")
+
+    classpath configurations.gen
+}
+
+task generateParser(type: JavaExec) {
+    ext.src = "src/main/kotlin/studio/lambda/racket/parser/Racket.bnf"
+    ext.dstRoot = "gen"
+
+    main = "org.intellij.grammar.Main"
+
+    args = [ dstRoot, file(src) ]
+
+    inputs  .file file(src)
+    outputs .dir fileTree(dir: dstRoot + '/org/studio/lambda/racket/', include: '**/*.java')
+
+    classpath configurations.gen
+}
+
+task generate {
+    dependsOn generateLexer, generateParser
+}
+
+compileJava .dependsOn generate
+compileKotlin .dependsOn generate
+
+generate.mustRunAfter clean
+
+task generateClean {
+    dependsOn clean, generate
+}
+
+clean {
+    delete "gen"
+}
+
+version '0.0.1'
