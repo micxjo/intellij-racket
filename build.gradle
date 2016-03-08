@@ -74,7 +74,7 @@ task generateParser(type: JavaExec) {
     args = [ dstRoot, file(src) ]
 
     inputs  .file file(src)
-    outputs .dir fileTree(dir: dstRoot + '/org/studio/lambda/racket/', include: '**/*.java')
+    outputs .dir fileTree(dir: dstRoot + '/studio/lambda/racket/', include: '**/*.java')
 
     classpath configurations.gen
 }
