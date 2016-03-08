@@ -40,6 +40,8 @@ idea {
 
 intellij {
     pluginName 'intellij-racket'
+
+    downloadSources Boolean.valueOf(downloadIdeaSources)
 }
 
 sourceSets {
