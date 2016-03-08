@@ -148,6 +148,9 @@ RADIX_2 = "#b"
 
 ABBREVIATION_PREFIX = "`" | "," | ",@"
 
+TRUE = "#" [tT]
+FALSE = "#" [fF]
+
 %%
 
 <YYINITIAL> {COMMENT}   { return COMMENT; }
@@ -176,8 +179,8 @@ ABBREVIATION_PREFIX = "`" | "," | ",@"
     "do"                { return DO; }
     "delay"             { return DELAY; }
     "quasiquote"        { return QUASIQUOTE; }
-    "#t"                { return TRUE; }
-    "#f"                { return FALSE; }
+    {TRUE}              { return TRUE; }
+    {FALSE}             { return FALSE; }
     "#("                { return VEC_OPEN; }
     "("                 { return LPAREN; }
     ")"                 { return RPAREN; }
