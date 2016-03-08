@@ -23,6 +23,7 @@ import com.intellij.testFramework.ParsingTestCase
 class RacketParsingTestCase : ParsingTestCase(
     "studio/lambda/racket/parser/fixtures",
     "rkt",
+    true,
     RacketParserDefinition())
 {
 
